@@ -2,6 +2,18 @@
 #include "common.hpp"
 using namespace std;
 
+array<int, 7654322> idx_map;
+
+void populate_idx_map() {
+    array<int, 7> xs = {1, 2, 3, 4, 5, 6, 7};
+    int cnt = 0;   
+    do {
+        int num = permutation_to_num(xs);
+        idx_map[num] = cnt;
+        ++cnt;
+    } while (next_permutation(xs.begin(), xs.end()));
+}
+
 int main() {
     cout << "Para descrever uma face do seu cubo escreva assim:\n";
     cout << "YW\n";
@@ -69,31 +81,26 @@ int main() {
     
     int axis[2][2][2];
     array<int, 7> perm;
-
-    int posi, posj, posk;
     
-    for (int i = 0; i < 2; ++i)
-        for (int j = 0; j < 2; ++j)
+    int cnt = 0, ori=0, p3=1; 
+    for (int i = 0; i < 2; ++i){
+        for (int j = 0; j < 2; ++j){
             for (int k = 0; k < 2; ++k) {
-                for (int ax = 0; ax < 3; ++ax)
+                for (int ax = 0; ax < 3; ++ax){
                     if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
                         axis[i][j][k] = ax;
+                }
                 sort(cube[i][j][k].begin(), cube[i][j][k].end());
-                if (cube[i][j][k] == "BOW") posi = i, posj = j, posk = k;
+                if(cube[i][j][k]!="BOW"){
+                    perm[cnt-1] = mp[cube[i][j][k]];
+                    cnt++;
+                    p3*=3; 
+                    ori+=axis[i][j][k]*p3;
+                }
             }
-    
-    for (int i = 0; i < 2; ++i)
-        for (int j = 0; j < 2; ++j)
-            for (int k = 0; k < 2; ++k) {
-                for (int ax = 0; ax < 3; ++ax)
-                    if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
-                        axis[i][j][k] = ax;
-                sort(cube[i][j][k].begin(), cube[i][j][k].end());
-                if (cube[i][j][k] == "BOW") posi = i, posj = j, posk = k;
-            }
-    
-        perm[i + 2*j + 4*k - 1] = mp[cube[i][j][k]];
-    cout << permutation_to_num(perm) << '\n'; 
-    return permutation_to_num(perm);
+        }
+    }
+   
+    cout << idx_map[permutation_to_num(perm)]*2187 + ori << '\n'; 
 }
 
