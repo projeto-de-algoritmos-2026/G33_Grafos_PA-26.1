@@ -73,7 +73,7 @@ Mas, desse jeito não daria para indexar os índices num vetor, porque ele teria
 
 Fixando a peça inicial então precisamos só guardar informações sobre 7 peças, então 28 bits, mas ainda não tá bom.
 
-O mínimo possível de estados provavelmente é `7! * 3^4 = 11.022.480`, pois fixado uma peça tem 7 posições livres para as outras e cada uma tem 3 eixos. Mas, se só representarmos pelo número da permutação como as transições do grafo vão funcionar?
+O mínimo possível de estados provavelmente é `7! * 3^7 = 11.022.480`, pois fixado uma peça tem 7 posições livres para as outras e cada uma tem 3 eixos. Mas, se só representarmos pelo número da permutação como as transições do grafo vão funcionar?
 
 CUBOVELOCIDADE. Movimentos Básicos. CuboVelocidade. Disponível em: https://cubovelocidade.com.br/tutorial/cubo-magico-3x3x3-movimentos-basicos/. Acesso em: 12 abr. 2026.
 
