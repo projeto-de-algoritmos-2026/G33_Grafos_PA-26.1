@@ -1,3 +1,5 @@
+#include "cubo_para_grafo.hpp"
+
 #include <bits/stdc++.h>
 #include "common.hpp"
 using namespace std;
@@ -94,7 +96,10 @@ int read_cube() {
                 }
             }
     
+    int mask_axis = 0;
     int cnt = 0;
+    int p3 = 1;
+    
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
@@ -102,11 +107,13 @@ int read_cube() {
                     for (int ax = 0; ax < 3; ++ax)
                         if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
                             axis[i][j][k] = order[ax];
+                    mask_axis += (axis[i][j][k] << 13) * p3;
                     perm[cnt] = mp[cube[i][j][k]];
                     ++cnt;
+                    p3 *= 3;
                 }
             }
     
-    return permutation_to_num(perm);
+    return permutation_to_num(perm) + mask_axis;
 }
 

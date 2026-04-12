@@ -1,5 +1,6 @@
-#include <array>
 #include "common.hpp"
+
+#include <array>
 
 int permutation_to_num(const std::array<int, 7>& perm) {
     int res = 0, p = 1;
