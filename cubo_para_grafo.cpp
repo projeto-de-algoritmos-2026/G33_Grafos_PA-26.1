@@ -2,7 +2,7 @@
 #include "common.hpp"
 using namespace std;
 
-int main() {
+int read_cube() {
     cout << "Para descrever uma face do seu cubo escreva assim:\n";
     cout << "YW\n";
     cout << "WW\n";
@@ -10,6 +10,7 @@ int main() {
     cout << "Sempre na ordem\n";
     cout << "12\n";
     cout << "34\n\n";
+    cout << "Além disso, a face da frente é pra onde a parte verde está olhando na peça de cores verde, vermelho e amarelo.\n\n";
     
     string cube[2][2][2];
     string l1, l2;
@@ -69,31 +70,43 @@ int main() {
     
     int axis[2][2][2];
     array<int, 7> perm;
-
+    array<int, 3> order;
     int posi, posj, posk;
     
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
+                string part = cube[i][j][k];
                 for (int ax = 0; ax < 3; ++ax)
-                    if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
+                    if (part[ax] == 'B' || part[ax] == 'G')
                         axis[i][j][k] = ax;
+                
                 sort(cube[i][j][k].begin(), cube[i][j][k].end());
-                if (cube[i][j][k] == "BOW") posi = i, posj = j, posk = k;
+                if (cube[i][j][k] == "GRY") {
+                    posi = i, posj = j, posk = k;
+                    for (int ax = 0; ax < 3; ++ax)
+                        if (part[ax] == 'G')
+                            order[ax] = 0;
+                        else if (part[ax] == 'R')
+                            order[ax] = 1;
+                        else if (part[ax] == 'Y')
+                            order[ax] = 2;
+                }
             }
     
+    int cnt = 0;
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
-                for (int ax = 0; ax < 3; ++ax)
-                    if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
-                        axis[i][j][k] = ax;
-                sort(cube[i][j][k].begin(), cube[i][j][k].end());
-                if (cube[i][j][k] == "BOW") posi = i, posj = j, posk = k;
+                if (!(i == posi && j == posj && k == posk)) {
+                    for (int ax = 0; ax < 3; ++ax)
+                        if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
+                            axis[i][j][k] = order[ax];
+                    perm[cnt] = mp[cube[i][j][k]];
+                    ++cnt;
+                }
             }
     
-        perm[i + 2*j + 4*k - 1] = mp[cube[i][j][k]];
-    cout << permutation_to_num(perm) << '\n'; 
     return permutation_to_num(perm);
 }
 
