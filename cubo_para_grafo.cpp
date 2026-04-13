@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include "common.hpp"
 using namespace std;
+extern array<int, 7654321 + 1> idx_to_perm;
 
 int read_cube() {
     cout << "Para descrever uma face do seu cubo escreva assim:\n";
@@ -95,7 +96,6 @@ int read_cube() {
                             order[ax] = 2;
                 }
             }
-    
     int mask_axis = 0;
     int cnt = 0;
     int p3 = 1;
@@ -107,13 +107,13 @@ int read_cube() {
                     for (int ax = 0; ax < 3; ++ax)
                         if (cube[i][j][k][ax] == 'B' || cube[i][j][k][ax] == 'G')
                             axis[i][j][k] = order[ax];
-                    mask_axis += (axis[i][j][k] << 13) * p3;
+                    mask_axis += axis[i][j][k] * p3;
                     perm[cnt] = mp[cube[i][j][k]];
                     ++cnt;
                     p3 *= 3;
                 }
             }
     
-    return permutation_to_num(perm) + mask_axis;
+    return idx_to_perm[permutation_to_num(perm)] + (mask_axis << 13);
 }
 
