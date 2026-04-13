@@ -1,5 +1,5 @@
 #include "read_cube.hpp"
-// #include "dbg/dbg.h"
+#include "dbg/dbg.h"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -12,12 +12,21 @@ using namespace std;
 struct Coords { int x, y, z; };
 
 int id_of_piece(const string& s) {
-    // Não está em ordem alfabética porque eu puis de acordo com as coordenadas
-    // e os loops para a permutação resolvida ser 0123456.
-    array<string, 7> arr = {"GRW", "GOY", "GOW", "BRY", "BRW", "BOY", "BOW"};
-    int id = find(arr.begin(), arr.end(), s) - arr.begin();
-    return id == (int)arr.size() ? -1 : id;
+    static const array<string, 7> arr = {"GRW", "GOY", "GOW", "BRY", "BRW", "BOY", "BOW"};
+    auto it = find(arr.begin(), arr.end(), s);
+    return it == arr.end() ? -1 : (int)(it - arr.begin());
 }
+
+const Coords COORDS[6][4] = {
+    {{0,0,0}, {0,1,0}, {0,0,1}, {0,1,1}},
+    {{0,1,0}, {1,1,0}, {0,1,1}, {1,1,1}},
+    {{1,1,0}, {1,0,0}, {1,1,1}, {1,0,1}},
+    {{1,0,0}, {0,0,0}, {1,0,1}, {0,0,1}},
+    {{1,0,0}, {1,1,0}, {0,0,0}, {0,1,0}},
+    {{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}}
+};
+const string FACES[] = {"frontal", "direita", "traseira", "esquerda", "de cima", "de baixo"};
+const int AXIS_ID[]  = {0, 1, 0, 1, 2, 2};
 
 int read_cube() {
     cout << "\nInstruções:\n\nSelecione uma face do cubo para ser a frontal\n\n"
@@ -25,80 +34,59 @@ int read_cube() {
          << "Para inserir as cores de uma face escreva assim: YW GG\n\n"
          << "A ordem é canto superior direito, esquerdo, desce e repete.\n\n";
          
-    // Lê as peças numa matriz 3d 2x2x2.
     string colors[2][2][2];
     vector<int> axis[2][2][2];
-    
-    Coords coords[6][4] = {
-        {{0,0,0}, {0,1,0}, {0,0,1}, {0,1,1}},
-        {{0,1,0}, {1,1,0}, {0,1,1}, {1,1,1}},
-        {{1,1,0}, {1,0,0}, {1,1,1}, {1,0,1}},
-        {{1,0,0}, {0,0,0}, {1,0,1}, {0,0,1}},
-        {{1,0,0}, {1,1,0}, {0,0,0}, {0,1,0}},
-        {{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}}
-    };
-    string faces[] = {"frontal", "direita", "traseira", "esquerda", "de cima", "de baixo"};
-    int axis_id[]  = {0, 1, 0, 1, 2, 2};
     
     for (int i = 0; i < 6; ++i) {
         if (i < 4) cout << "Gire o cubo e insira a face ";
         else cout << "Na face frontal insira a face ";
-        cout << faces[i] << " >\n";
+        cout << FACES[i] << " >\n";
+        
         string l1, l2; 
         cin >> l1 >> l2;
-        colors[coords[i][0].x][coords[i][0].y][coords[i][0].z] += l1[0];
-        colors[coords[i][1].x][coords[i][1].y][coords[i][1].z] += l1[1];
-        colors[coords[i][2].x][coords[i][2].y][coords[i][2].z] += l2[0];
-        colors[coords[i][3].x][coords[i][3].y][coords[i][3].z] += l2[1];
-        axis[coords[i][0].x][coords[i][0].y][coords[i][0].z].emplace_back(axis_id[i]);
-        axis[coords[i][1].x][coords[i][1].y][coords[i][1].z].emplace_back(axis_id[i]);
-        axis[coords[i][2].x][coords[i][2].y][coords[i][2].z].emplace_back(axis_id[i]);
-        axis[coords[i][3].x][coords[i][3].y][coords[i][3].z].emplace_back(axis_id[i]);
+        string input = l1 + l2;
+        
+        for (int p = 0; p < 4; ++p) {
+            auto [cx, cy, cz] = COORDS[i][p];
+            colors[cx][cy][cz] += input[p];
+            axis[cx][cy][cz].emplace_back(AXIS_ID[i]);
+        }
     }
     
     Coords GRY = {0, 0, 0};
-    
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
-                string piece = colors[i][j][k];
-                sort(piece.begin(), piece.end());
-                if (piece == "GRY") GRY = {i, j, k};
+                string p = colors[i][j][k];
+                sort(p.begin(), p.end());
+                if (p == "GRY") GRY = {i, j, k};
             }
     
-    // Fixa a peça GRY como (0, 0, 0), arruma as outras.  
     string colors_fixed[2][2][2];
-    vector<int> axis_fixed[2][2][2];
-    vector<int> transform_axis(3);
+    int axis_fixed[2][2][2][3];
+    int trans[3]; 
+
     for (int ax = 0; ax < 3; ++ax) {
-        char color = colors[GRY.x][GRY.y][GRY.z][ax];
-        int cur_axis = axis[GRY.x][GRY.y][GRY.z][ax];
-        if (color == 'G')
-            transform_axis[cur_axis] = 0;
-        else if (color == 'R')
-            transform_axis[cur_axis] = 1;
-        else
-            transform_axis[cur_axis] = 2;
+        char c = colors[GRY.x][GRY.y][GRY.z][ax];
+        int a = axis[GRY.x][GRY.y][GRY.z][ax];
+        trans[a] = (c == 'G') ? 0 : (c == 'R' ? 1 : 2);
     }
     
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
-                int x = (GRY.x + i) & 1;
-                int y = (GRY.y + j) & 1;
-                int z = (GRY.z + k) & 1;
-                
-                colors_fixed[x][y][z] = colors[i][j][k];
-                axis_fixed[x][y][z] = vector<int>(3);
-                for (int ax = 0; ax < 3; ++ax) {
-                    int new_axis = transform_axis[axis[i][j][k][ax]];
-                    axis_fixed[x][y][z][ax] = new_axis;
-                }
+                int p[3] = {i, j, k};
+                int g[3] = {GRY.x, GRY.y, GRY.z};
+                int l[3]; 
+
+                for(int ax = 0; ax < 3; ++ax) 
+                    l[trans[ax]] = p[ax] ^ g[ax];
+
+                colors_fixed[l[0]][l[1]][l[2]] = colors[i][j][k];
+                for (int ax = 0; ax < 3; ++ax) 
+                    axis_fixed[l[0]][l[1]][l[2]][ax] = trans[axis[i][j][k][ax]];
             }
 
-    // Codifica o estado do cubo num inteiro que tem a permutação
-    // das peças (comprimido pelo índice da permutação) e a
-    // orientação delas (comprimido por base 3).
     vector<int> perm(7);
     int axis_mask_base3 = 0;
     int cur_base3 = 1;

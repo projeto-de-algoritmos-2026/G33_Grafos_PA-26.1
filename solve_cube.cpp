@@ -1,5 +1,5 @@
 #include "read_cube.hpp"
-// #include "dbg/dbg.h"
+#include "dbg/dbg.h"
 #include "utils.hpp"
 
 #include <iostream>
@@ -13,51 +13,42 @@ constexpr int NODES = 11022480;  // 7! . 3⁷
 
 // Novas posições da permutação depois de rotacionar os eixos.
 const array<array<int, 7>, 6> ROTATION_TRANSFORMATIONS = {{
-    {0,1,2,5,3,6,4},  // x anti horário
-    {0,2,6,3,4,1,5},  // y anti horário
-    {4,1,0,3,6,5,2},  // z anti horário
-    {0,1,2,4,6,3,5},  // x horário
-    {0,5,1,3,4,6,2},  // y horário
-    {2,1,6,3,0,5,4}   // z horário
+    {0,1,2,5,3,6,4}, {0,2,6,3,4,1,5}, {4,1,0,3,6,5,2},
+    {0,1,2,4,6,3,5}, {0,5,1,3,4,6,2}, {2,1,6,3,0,5,4},
 }};
 
 const array<string, 6> ROTATION_NAMES = {
-    "X Anti-Horário",
-    "Y Anti-Horário",
-    "Z Anti-Horário",
-    "X Horário",
-    "Y Horário",
-    "Z Horário",
+    "X Anti-Horário", "Y Anti-Horário", "Z Anti-Horário",
+    "X Horário",      "Y Horário",      "Z Horário",
 };
 
 // Novas eixos depois de rotacionar os eixos.
-const array<int, 3> AXIS_TRANSFORMATIONS = {{
-    3,  // x
-    2,  // y
-    1,  // z
-}}; 
+const array<int, 3> AXIS_TRANSFORMATIONS = {3, 2, 1}; 
 
 int apply_transformations(int u, const array<int, 7>& rotation_transformation, int axis_transformation) {
-    int cur_base3 = 1;
+    static array<int, 7> old_axes;
+    static vector<int> new_perm(7);
+    
     auto [perm, axis_mask_base3] = uncompress_state(u);
-    int new_axis_mask_base3 = axis_mask_base3;
-    vector<int> new_perm(7);
     
     for (int i = 0; i < 7; ++i) {
-        new_perm[i] = perm[rotation_transformation[i]];
-        
-        if (rotation_transformation[i] != i) {
-            int cur_axis = axis_mask_base3 % 3;
-            if (!((cur_axis == 0 && axis_transformation == 3) ||
-                (cur_axis == 1 && axis_transformation == 2) ||
-                (cur_axis == 2 && axis_transformation == 1)
-            )) {
-                new_axis_mask_base3 -= cur_axis * cur_base3;
-                new_axis_mask_base3 += (cur_axis ^ axis_transformation) * cur_base3;
-            }
-        }
-        
+        old_axes[i] = axis_mask_base3 % 3;
         axis_mask_base3 /= 3;
+    }
+    
+    int new_axis_mask_base3 = 0;
+    int cur_base3 = 1;
+    
+    for (int i = 0; i < 7; ++i) {
+        int j = rotation_transformation[i];
+        new_perm[i] = perm[j];
+        
+        int cur_axis = old_axes[j];
+        
+        if (j != i && (cur_axis + axis_transformation != 3))
+            cur_axis ^= axis_transformation;
+        
+        new_axis_mask_base3 += cur_axis * cur_base3;
         cur_base3 *= 3;
     }
     
@@ -67,7 +58,9 @@ int apply_transformations(int u, const array<int, 7>& rotation_transformation, i
 int main() {
     int initial = read_cube();
     
-    vector<int> pre(NODES, -1), move(NODES);
+    vector<int> pre(NODES, -1);
+    vector<char> move(NODES);
+    
     queue<int> q;
     q.emplace(initial);
     pre[initial] = -2;
@@ -86,23 +79,26 @@ int main() {
                 move[v] = i;
             }
         }
+        
+        states_dbg++;
     }
     
-    
-    vector<int> rotations;
     int cur = 0;
     if (pre[cur] == -1) {
         cout << "Cubo impossível\n";
         return 0;
     }
     
+    vector<int> rotations;
     while (cur != initial) {
         rotations.emplace_back(move[cur]);
         cur = pre[cur];
     }
     reverse(rotations.begin(), rotations.end());
 
-    cout << "Serão necessários " << rotations.size() << " passos:\n";
+    cout << "Os eixos que vão ser descritos são os opostos ao da peça GRY\n"
+         << "Onde a direção da cor verde é X, a direção da cor vermelha é Y e a direção da cor amarelo é Z.\n\n"
+         << "Serão necessários " << rotations.size() << " passos:\n\n";
     for (int rotation : rotations)
         cout << "Rotacione o eixo " << ROTATION_NAMES[rotation] << '\n';
 }
