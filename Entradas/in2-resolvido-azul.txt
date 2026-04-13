@@ -1,14 +1,14 @@
-GG
-OO
-
-OO
+BB
 BB
 
-BB
+RR
 RR
 
-RR
 GG
+GG
+
+OO
+OO
 
 YY
 YY

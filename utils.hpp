@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
+using namespace std;
 
-long long pos_of_perm(const std::vector<int>& perm);
-std::vector<int> perm_at_pos(int n, long long pos);
-std::vector<int> to_base(int x, int b);
+int compress_state(const vector<int>& perm, int axis_mask_base3);
+pair<vector<int>, int> uncompress_state(int state);

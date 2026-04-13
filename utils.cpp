@@ -1,10 +1,11 @@
 #include "utils.hpp"
+// #include "dbg/dbg.h"
 
 #include <cassert>
 #include <vector>
-#include <algorithm>
+using namespace std;
 
-long long pos_of_perm(const std::vector<int>& perm) {
+long long pos_of_perm(const vector<int>& perm) {
     int n = perm.size();
     if (n <= 1) return 0;
     
@@ -19,11 +20,9 @@ long long pos_of_perm(const std::vector<int>& perm) {
     return res;
 }
 
-std::vector<int> perm_at_pos(int n, long long pos) {
-    if (n <= 0) return {};
-    
-    std::vector<int> p(n);
-    std::vector<int> avail(n);
+vector<int> perm_at_pos(int n, long long pos) {
+    vector<int> p(n);
+    vector<int> avail(n);
     long long fact = 1;
     
     for (int i = 0; i < n; ++i) {
@@ -43,11 +42,14 @@ std::vector<int> perm_at_pos(int n, long long pos) {
     return p;
 }
 
-// Exemplo: (x = 6, b = 2): { 1, 1, 0 }. O(log(N))
-std::vector<int> to_base(int x, int b) {
-    assert(b > 1);
-    std::vector<int> res;
-    while (x) res.emplace_back(x % b), x /= b;
-    reverse(res.begin(), res.end());
-    return res;
+// Comprime as informações nesse número de base 2187
+// porque 3^7 = 2187 que é o maior valor pro axis_mask_base3.
+int compress_state(const vector<int>& perm, int axis_mask_base3) {
+    return pos_of_perm(perm) * 2187 + axis_mask_base3;
+}
+
+pair<vector<int>, int> uncompress_state(int state) {
+    int perm = state / 2187;
+    int axis_mask_base3 = state % 2187;
+    return {perm_at_pos(7, perm), axis_mask_base3};
 }

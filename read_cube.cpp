@@ -1,5 +1,5 @@
 #include "read_cube.hpp"
-#include "dbg/dbg.h"
+// #include "dbg/dbg.h"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -16,7 +16,7 @@ int id_of_piece(const string& s) {
     // e os loops para a permutação resolvida ser 0123456.
     array<string, 7> arr = {"GRW", "GOY", "GOW", "BRY", "BRW", "BOY", "BOW"};
     int id = find(arr.begin(), arr.end(), s) - arr.begin();
-    return id == arr.size() ? -1 : id;
+    return id == (int)arr.size() ? -1 : id;
 }
 
 int read_cube() {
@@ -67,10 +67,19 @@ int read_cube() {
             }
     
     // Fixa a peça GRY como (0, 0, 0), arruma as outras.  
-    // Ela sempre tá na face frontal, mas não necessariamente no (0, 0, 0). 
     string colors_fixed[2][2][2];
     vector<int> axis_fixed[2][2][2];
-    vector<int> transform_axis = axis[GRY.x][GRY.y][GRY.z];
+    vector<int> transform_axis(3);
+    for (int ax = 0; ax < 3; ++ax) {
+        char color = colors[GRY.x][GRY.y][GRY.z][ax];
+        int cur_axis = axis[GRY.x][GRY.y][GRY.z][ax];
+        if (color == 'G')
+            transform_axis[cur_axis] = 0;
+        else if (color == 'R')
+            transform_axis[cur_axis] = 1;
+        else
+            transform_axis[cur_axis] = 2;
+    }
     
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
@@ -81,8 +90,10 @@ int read_cube() {
                 
                 colors_fixed[x][y][z] = colors[i][j][k];
                 axis_fixed[x][y][z] = vector<int>(3);
-                for (int ax = 0; ax < 3; ++ax)
-                    axis_fixed[x][y][z][ax] = transform_axis[axis[i][j][k][ax]];
+                for (int ax = 0; ax < 3; ++ax) {
+                    int new_axis = transform_axis[axis[i][j][k][ax]];
+                    axis_fixed[x][y][z][ax] = new_axis;
+                }
             }
 
     // Codifica o estado do cubo num inteiro que tem a permutação
@@ -102,14 +113,12 @@ int read_cube() {
                 for (int ax = 0; ax < 3; ++ax)
                     if (piece[ax] == 'B' || piece[ax] == 'G')
                         main_axis = ax;
-                axis_mask_base3 = axis_fixed[i][j][k][main_axis] * cur_base3;
+                axis_mask_base3 += axis_fixed[i][j][k][main_axis] * cur_base3;
                 cur_base3 *= 3;
                 
                 sort(piece.begin(), piece.end());
                 perm[4*i + 2*j + k - 1] = id_of_piece(piece);
             }
 
-    // Comprime as informações nesse número de base 2187
-    // porque 3^7 = 2187 que é o maior valor pro axis_mask_base3.
-    return pos_of_perm(perm) * 2187 + axis_mask_base3;
+    return compress_state(perm, axis_mask_base3);
 }
