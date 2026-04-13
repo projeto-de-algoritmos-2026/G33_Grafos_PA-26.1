@@ -1,6 +1,8 @@
 #include "utils.hpp"
 
+#include <cassert>
 #include <vector>
+#include <algorithm>
 
 long long pos_of_perm(const std::vector<int>& perm) {
     int n = perm.size();
@@ -39,4 +41,13 @@ std::vector<int> perm_at_pos(int n, long long pos) {
     p[n - 1] = avail[0];
     
     return p;
+}
+
+// Exemplo: (x = 6, b = 2): { 1, 1, 0 }. O(log(N))
+std::vector<int> to_base(int x, int b) {
+    assert(b > 1);
+    std::vector<int> res;
+    while (x) res.emplace_back(x % b), x /= b;
+    reverse(res.begin(), res.end());
+    return res;
 }
