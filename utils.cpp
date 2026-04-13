@@ -1,55 +1,50 @@
 #include "utils.hpp"
-// #include "dbg/dbg.h"
 
-#include <cassert>
-#include <vector>
+#include <array>
+#include <span>
+#include <utility>
+
 using namespace std;
 
-long long pos_of_perm(const vector<int>& perm) {
+constexpr array<int, 7> FACTORIALS = {1, 1, 2, 6, 24, 120, 720};
+
+// Permutação -> Índice no vetor ordenado
+int lehmer_encode(span<const int> perm) {
     int n = perm.size();
-    if (n <= 1) return 0;
+    int res = 0;
     
-    long long res = 0, fact = 1;
-    for (int i = n - 2; i >= 0; --i) {
+    for (int i = 0; i < n - 1; ++i) {
         int inv = 0;
         for (int j = i + 1; j < n; ++j)
             if (perm[j] < perm[i]) inv++;
-        res += inv * fact;
-        fact *= (n - i);
+        res += inv * FACTORIALS[n - 1 - i];
     }
+    
     return res;
 }
 
-vector<int> perm_at_pos(int n, long long pos) {
-    vector<int> p(n);
-    vector<int> avail(n);
-    long long fact = 1;
+// Índice no vetor ordenado -> Permutação
+array<int, 7> lehmer_decode(int pos) {
+    array<int, 7> p, avail = {0, 1, 2, 3, 4, 5, 6};
     
-    for (int i = 0; i < n; ++i) {
-        avail[i] = i;
-        if (i > 0) fact *= i;
-    }
-    
-    for (int i = 0; i < n - 1; ++i) {
-        long long inv = pos / fact;
+    for (int i = 0; i < 7; ++i) {
+        int fact = FACTORIALS[6 - i];
+        int inv = pos / fact;
         pos %= fact;
         p[i] = avail[inv];
-        avail.erase(avail.begin() + inv); 
-        fact /= (n - 1 - i);
+        for (int j = inv; j < 6 - i; ++j)
+            avail[j] = avail[j + 1];
     }
-    p[n - 1] = avail[0];
     
     return p;
 }
 
-// Comprime as informações nesse número de base 2187
-// porque 3^7 = 2187 que é o maior valor pro axis_mask_base3.
-int compress_state(const vector<int>& perm, int axis_mask_base3) {
-    return pos_of_perm(perm) * 2187 + axis_mask_base3;
+int compress_state(span<const int> perm, int axis_mask_base3) {
+    return lehmer_encode(perm) * 2187 + axis_mask_base3;
 }
 
-pair<vector<int>, int> uncompress_state(int state) {
-    int perm = state / 2187;
+pair<array<int, 7>, int> uncompress_state(int state) {
+    int perm_rank = state / 2187;
     int axis_mask_base3 = state % 2187;
-    return {perm_at_pos(7, perm), axis_mask_base3};
+    return {lehmer_decode(perm_rank), axis_mask_base3};
 }
