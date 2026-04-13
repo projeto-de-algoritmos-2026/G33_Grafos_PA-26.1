@@ -19,7 +19,7 @@ int id_of_piece(const string& s) {
     return id == arr.size() ? -1 : id;
 }
 
-int main() {
+int read_cube() {
     cout << "\nInstruções:\n\nSelecione uma face do cubo para ser a frontal\n\n"
          << "Cores: \033[33mamarelo (Y), \033[31mvermelho (R), \033[32mverde (G), \033[38;5;208mlaranja (O), \033[34mazul (B) e \033[mbranco (W)\n\n"
          << "Para inserir as cores de uma face escreva assim: YW GG\n\n"
