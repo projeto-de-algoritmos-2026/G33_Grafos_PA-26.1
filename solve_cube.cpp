@@ -12,22 +12,21 @@ using namespace std;
 constexpr int NODES = 11022480;  // 7! . 3⁷
 
 // Novas posições da permutação depois de rotacionar os eixos.
-const array<array<int, 7>, 6> ROTATION_TRANSFORMATIONS = {{
+constexpr array<array<int, 7>, 6> ROTATION_TRANSFORMATIONS = {{
     {0,1,2,5,3,6,4}, {0,2,6,3,4,1,5}, {4,1,0,3,6,5,2},
     {0,1,2,4,6,3,5}, {0,5,1,3,4,6,2}, {2,1,6,3,0,5,4},
 }};
 
-const array<string, 6> ROTATION_NAMES = {
+constexpr array<string, 6> ROTATION_NAMES = {
     "X Anti-Horário", "Y Anti-Horário", "Z Anti-Horário",
     "X Horário",      "Y Horário",      "Z Horário",
 };
 
 // Novas eixos depois de rotacionar os eixos.
-const array<int, 3> AXIS_TRANSFORMATIONS = {3, 2, 1}; 
+constexpr array<int, 3> AXIS_TRANSFORMATIONS = {3, 2, 1}; 
 
 int apply_transformations(int u, const array<int, 7>& rotation_transformation, int axis_transformation) {
-    static array<int, 7> old_axes;
-    static vector<int> new_perm(7);
+    array<int, 7> old_axes, new_perm;
     
     auto [perm, axis_mask_base3] = uncompress_state(u);
     
@@ -36,8 +35,7 @@ int apply_transformations(int u, const array<int, 7>& rotation_transformation, i
         axis_mask_base3 /= 3;
     }
     
-    int new_axis_mask_base3 = 0;
-    int cur_base3 = 1;
+    int new_axis_mask_base3 = 0, cur_pow3 = 1;
     
     for (int i = 0; i < 7; ++i) {
         int j = rotation_transformation[i];
@@ -48,8 +46,8 @@ int apply_transformations(int u, const array<int, 7>& rotation_transformation, i
         if (j != i && (cur_axis + axis_transformation != 3))
             cur_axis ^= axis_transformation;
         
-        new_axis_mask_base3 += cur_axis * cur_base3;
-        cur_base3 *= 3;
+        new_axis_mask_base3 += cur_axis * cur_pow3;
+        cur_pow3 *= 3;
     }
     
     return compress_state(new_perm, new_axis_mask_base3);
@@ -58,8 +56,8 @@ int apply_transformations(int u, const array<int, 7>& rotation_transformation, i
 int main() {
     int initial = read_cube();
     
-    vector<int> pre(NODES, -1);
-    vector<char> move(NODES);
+    vector<int> pre(NODES, -1);  // Tem que ser na heap porque é muito grande.
+    array<char, NODES> move;
     
     queue<int> q;
     q.emplace(initial);
@@ -82,6 +80,7 @@ int main() {
         
         states_dbg++;
     }
+    // dbg(states_dbg);
     
     int cur = 0;
     if (pre[cur] == -1) {

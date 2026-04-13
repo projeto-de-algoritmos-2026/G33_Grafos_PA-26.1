@@ -12,12 +12,14 @@ using namespace std;
 struct Coords { int x, y, z; };
 
 int id_of_piece(const string& s) {
-    static const array<string, 7> arr = {"GRW", "GOY", "GOW", "BRY", "BRW", "BOY", "BOW"};
+    // Está nessa ordem para a permutação inicial ser {0,1,2,3,4,5,6}.
+    static constexpr array<string, 7> arr = {"GRW", "GOY", "GOW", "BRY", "BRW", "BOY", "BOW"};
     auto it = find(arr.begin(), arr.end(), s);
     return it == arr.end() ? -1 : (int)(it - arr.begin());
 }
 
-const Coords COORDS[6][4] = {
+// Coordenadas das peças em cada face.
+constexpr Coords COORDS[6][4] = {
     {{0,0,0}, {0,1,0}, {0,0,1}, {0,1,1}},
     {{0,1,0}, {1,1,0}, {0,1,1}, {1,1,1}},
     {{1,1,0}, {1,0,0}, {1,1,1}, {1,0,1}},
@@ -25,8 +27,8 @@ const Coords COORDS[6][4] = {
     {{1,0,0}, {1,1,0}, {0,0,0}, {0,1,0}},
     {{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}}
 };
-const string FACES[] = {"frontal", "direita", "traseira", "esquerda", "de cima", "de baixo"};
-const int AXIS_ID[]  = {0, 1, 0, 1, 2, 2};
+constexpr array<string, 6> FACES = {"frontal", "direita", "traseira", "esquerda", "de cima", "de baixo"};
+constexpr array<int, 6> AXIS_ID = {0, 1, 0, 1, 2, 2};
 
 int read_cube() {
     cout << "\nInstruções:\n\nSelecione uma face do cubo para ser a frontal\n\n"
@@ -46,13 +48,14 @@ int read_cube() {
         cin >> l1 >> l2;
         string input = l1 + l2;
         
+        // Mapeia a cor e o eixo para cada peça.
         for (int p = 0; p < 4; ++p) {
             auto [cx, cy, cz] = COORDS[i][p];
             colors[cx][cy][cz] += input[p];
             axis[cx][cy][cz].emplace_back(AXIS_ID[i]);
         }
     }
-    
+        
     Coords GRY = {0, 0, 0};
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
@@ -63,34 +66,35 @@ int read_cube() {
             }
     
     string colors_fixed[2][2][2];
-    int axis_fixed[2][2][2][3];
-    int trans[3]; 
+    array<int, 3> axis_fixed[2][2][2];
+    array<int, 3> transform_axis;
 
+    // Mapeia cada eixo da peça GRY.
     for (int ax = 0; ax < 3; ++ax) {
         char c = colors[GRY.x][GRY.y][GRY.z][ax];
         int a = axis[GRY.x][GRY.y][GRY.z][ax];
-        trans[a] = (c == 'G') ? 0 : (c == 'R' ? 1 : 2);
+        transform_axis[a] = (c == 'G') ? 0 : (c == 'R' ? 1 : 2);
     }
     
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
-                int p[3] = {i, j, k};
-                int g[3] = {GRY.x, GRY.y, GRY.z};
-                int l[3]; 
+                array<int, 3> p = {i, j, k};
+                array<int, 3> g = {GRY.x, GRY.y, GRY.z};
+                array<int, 3> l;
 
                 for(int ax = 0; ax < 3; ++ax) 
-                    l[trans[ax]] = p[ax] ^ g[ax];
+                    l[transform_axis[ax]] = p[ax] ^ g[ax];
 
                 colors_fixed[l[0]][l[1]][l[2]] = colors[i][j][k];
                 for (int ax = 0; ax < 3; ++ax) 
-                    axis_fixed[l[0]][l[1]][l[2]][ax] = trans[axis[i][j][k][ax]];
+                    axis_fixed[l[0]][l[1]][l[2]][ax] = transform_axis[axis[i][j][k][ax]];
             }
 
-    vector<int> perm(7);
-    int axis_mask_base3 = 0;
-    int cur_base3 = 1;
+    array<int, 7> perm;
+    int axis_mask_base3 = 0, cur_pow3 = 1;
     
+    // Gera a permutação e a máscara em base 3 do estado do cubo.
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
@@ -101,8 +105,8 @@ int read_cube() {
                 for (int ax = 0; ax < 3; ++ax)
                     if (piece[ax] == 'B' || piece[ax] == 'G')
                         main_axis = ax;
-                axis_mask_base3 += axis_fixed[i][j][k][main_axis] * cur_base3;
-                cur_base3 *= 3;
+                axis_mask_base3 += axis_fixed[i][j][k][main_axis] * cur_pow3;
+                cur_pow3 *= 3;
                 
                 sort(piece.begin(), piece.end());
                 perm[4*i + 2*j + k - 1] = id_of_piece(piece);

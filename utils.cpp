@@ -39,6 +39,8 @@ array<int, 7> lehmer_decode(int pos) {
     return p;
 }
 
+// 2187 porque axis_mask_base3 é no máximo 3^7. Daí comprime o estado
+// do cubo nesse inteiro para dar para guardar em um vetor.
 int compress_state(span<const int> perm, int axis_mask_base3) {
     return lehmer_encode(perm) * 2187 + axis_mask_base3;
 }
