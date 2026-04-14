@@ -2,7 +2,7 @@
 
 # Cubando
 
-**Conteúdo da Disciplina**: Grafos<br>
+*Conteúdo da Disciplina*: Grafos<br>
 
 ## Alunos
 |Matrícula | Aluno |
@@ -12,26 +12,62 @@
 
 
 ## Sobre
+Projeto desenvolvido por alunos da Universidade de Brasília(UnB) para a disciplina de Projeto de Algoritmos. 
+
 O projeto consiste na resolução de um cubo mágico. Como o cubo possui diversas combinações possíveis, neste projeto o foco será em um cubo 2x2x2. 
 Será utilizado um algoritmo de busca em largura(BFS), que percorrerá um grafo para encontrar a menor quantidade de movimentos necessários para a montagem.
 
 
 ## Screenshots
-Adicione 3 ou mais screenshots do projeto em funcionamento.
+
+Cubo do cube solve 2x2x2:
+![Imagem atrás cubo mágico](Imagens/cubo-2.png)
+
+Referencial:
+![Mapeamento do cubo](Imagens/coordenadas.png)
+
+
+Camadas:
+![Camadas do cubo](Imagens/camadas.png)
+
+
+
 
 ## Instalação 
-**Linguagem**: Python 3<br>
-**Framework**: Nao se aplica<br>
+*Linguagem*: C++<br>
+
+## Clone o repositório  
+ sh 
+ git clone git@github.com:projeto-de-algoritmos-2026/G33_Grafos_PA-26.1.git
+ cd G33_Grafos_PA-26.1
+ 
 
 ### Pre-requisitos
-- Ter o Python 3 instalado.
-- Estar na raiz do projeto.
-- Ter os arquivos de dataset disponiveis na pasta `datasets/`.
+- Ter o C++20 instalado.
+- Acesso ao [cube solver](https://cube-solver.com/#id=2)
 
-### Comando para executar
-Como rodar o projeto
 
-## Uso 
-Explicar como usar
+## Uso
+Rode no terminal: 
+sh 
+g++ -Wall -O2 solve_cube.cpp read_cube.cpp utils.cpp -o nome
 
-## Outros 
+$./nome 
+
+Embaralhe o cubo no cube solve.
+![Cubo embaralhado](Imagens/embaralhado.png)
+
+![Instrucoes](Imagens/instrucoes.png)
+
+![Instrucoes](Imagens/order.png)
+
+Sincronize com a peça fixada(GRY) e mova de acordo com as orientações dadas. 
+
+Ex: 
+
+![Sync com eixo](Imagens/step1.png)
+
+Passo 1(de acordo com as orientações):
+![Passo 1](Imagens/step2.png)
+Passo 2(de acordo com as orientações):
+![Passo 2](Imagens/step3.png)
