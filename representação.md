@@ -78,3 +78,5 @@ O mínimo possível de estados provavelmente é `7! * 3^7 = 11.022.480`, pois fi
 CUBOVELOCIDADE. Movimentos Básicos. CuboVelocidade. Disponível em: https://cubovelocidade.com.br/tutorial/cubo-magico-3x3x3-movimentos-basicos/. Acesso em: 12 abr. 2026.
 
 CUBOVELOCIDADE. Casos Impossíveis. CuboVelocidade. Disponível em: https://cubovelocidade.com.br/tutorial/cubo-magico-3x3x3-casos-impossiveis/. Acesso em: 12 abr. 2026.
+
+https://en.wikipedia.org/wiki/Lehmer_code

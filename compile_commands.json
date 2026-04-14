@@ -1,0 +1,17 @@
+[
+  {
+    "directory": "/home/yogi/Documentos/Repositórios/G33_GRAFOS_PA-26.1",
+    "command": "g++ -Wall -O2 -std=c++20 -Idbg -c solve_cube.cpp",
+    "file": "solve_cube.cpp"
+  },
+  {
+    "directory": "/home/yogi/Documentos/Repositórios/G33_GRAFOS_PA-26.1",
+    "command": "g++ -Wall -O2 -std=c++20 -Idbg -c read_cube.cpp",
+    "file": "read_cube.cpp"
+  },
+  {
+    "directory": "/home/yogi/Documentos/Repositórios/G33_GRAFOS_PA-26.1",
+    "command": "g++ -Wall -O2 -std=c++20 -Idbg -c utils.cpp",
+    "file": "utils.cpp"
+  }
+]
