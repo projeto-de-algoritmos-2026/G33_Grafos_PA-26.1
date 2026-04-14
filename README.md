@@ -21,13 +21,16 @@ Será utilizado um algoritmo de busca em largura(BFS), que percorrerá um grafo 
 ## Screenshots
 
 Cubo do cube solve 2x2x2:
+
 ![Imagem atrás cubo mágico](Imagens/cubo-2.png)
 
 Referencial:
+
 ![Mapeamento do cubo](Imagens/coordenadas.png)
 
 
 Camadas:
+
 ![Camadas do cubo](Imagens/camadas.png)
 
 
@@ -55,6 +58,7 @@ g++ -Wall -O2 solve_cube.cpp read_cube.cpp utils.cpp -o nome
 $./nome 
 
 Embaralhe o cubo no cube solve.
+
 ![Cubo embaralhado](Imagens/embaralhado.png)
 
 ![Instrucoes](Imagens/instrucoes.png)
@@ -68,6 +72,9 @@ Ex:
 ![Sync com eixo](Imagens/step1.png)
 
 Passo 1(de acordo com as orientações):
+
 ![Passo 1](Imagens/step2.png)
+
 Passo 2(de acordo com as orientações):
+
 ![Passo 2](Imagens/step3.png)
