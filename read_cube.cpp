@@ -56,7 +56,7 @@ int read_cube() {
         }
     }
         
-    Coords GRY = {0, 0, 0};
+    Coords GRY = {-1, -1, -1};
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             for (int k = 0; k < 2; ++k) {
@@ -64,6 +64,11 @@ int read_cube() {
                 sort(p.begin(), p.end());
                 if (p == "GRY") GRY = {i, j, k};
             }
+    
+    if (GRY.x == -1) {
+        cout << "\n\033[31mErro: Peça GRY não encontrada.\033[m\n";
+        exit(1);
+    }
     
     string colors_fixed[2][2][2];
     array<int, 3> axis_fixed[2][2][2];
@@ -109,7 +114,14 @@ int read_cube() {
                 cur_pow3 *= 3;
                 
                 sort(piece.begin(), piece.end());
-                perm[4*i + 2*j + k - 1] = id_of_piece(piece);
+                int id = id_of_piece(piece);
+                
+                if (id == -1) {
+                    cout << "\n\033[31mErro: Uma peça '" << piece << "' inválida foi inserida.\033[m\n";
+                    exit(1);
+                }
+                
+                perm[4*i + 2*j + k - 1] = id;
             }
 
     return compress_state(perm, axis_mask_base3);

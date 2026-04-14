@@ -63,8 +63,6 @@ int main() {
     q.emplace(initial);
     pre[initial] = -2;
     
-    int states_dbg = 0;
-    
     while (!q.empty()) {
         int u = q.front();
         q.pop();
@@ -78,9 +76,8 @@ int main() {
             }
         }
         
-        states_dbg++;
+        if (pre[0] != -1) break;
     }
-    // dbg(states_dbg);
     
     int cur = 0;
     if (pre[cur] == -1) {
@@ -97,7 +94,7 @@ int main() {
 
     cout << "Os eixos que vão ser descritos são os opostos ao da peça GRY\n"
          << "Onde a direção da cor verde é X, a direção da cor vermelha é Y e a direção da cor amarelo é Z.\n\n"
-         << "Serão necessários " << rotations.size() << " passos:\n\n";
+         << "\033[32mSerão necessários " << rotations.size() << " passos:\033[m\n\n";
     for (int rotation : rotations)
         cout << "Rotacione o eixo " << ROTATION_NAMES[rotation] << '\n';
 }
