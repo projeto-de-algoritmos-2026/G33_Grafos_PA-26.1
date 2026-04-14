@@ -35,15 +35,14 @@ Camadas:
 
 
 
-
 ## Instalação 
 *Linguagem*: C++<br>
 
 ## Clone o repositório  
- sh 
- git clone git@github.com:projeto-de-algoritmos-2026/G33_Grafos_PA-26.1.git
- cd G33_Grafos_PA-26.1
- 
+ ```sh 
+    git clone git@github.com:projeto-de-algoritmos-2026/G33_Grafos_PA-26.1.git
+    cd G33_Grafos_PA-26.1
+ ```
 
 ### Pre-requisitos
 - Ter o C++20 instalado.
@@ -52,12 +51,11 @@ Camadas:
 
 ## Uso
 Rode no terminal: 
-sh 
-g++ -Wall -O2 solve_cube.cpp read_cube.cpp utils.cpp -o nome
-
-$./nome 
-
-Embaralhe o cubo no cube solve.
+```sh 
+    g++ -O2 -std=c++20 -Idbg solve_cube.cpp read_cube.cpp utils.cpp -o cubando
+    $./cubando
+```
+Embaralhe o cubo no cube solver.
 
 ![Cubo embaralhado](Imagens/embaralhado.png)
 
