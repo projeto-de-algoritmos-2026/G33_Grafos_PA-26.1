@@ -17,6 +17,9 @@ Projeto desenvolvido por alunos da Universidade de Brasília(UnB) para a discipl
 O projeto consiste na resolução de um cubo mágico. Como o cubo possui diversas combinações possíveis, neste projeto o foco será em um cubo 2x2x2. 
 Será utilizado um algoritmo de busca em largura(BFS), que percorrerá um grafo para encontrar a menor quantidade de movimentos necessários para a montagem.
 
+## Link do Vídeo da Apresentação
+
+[https://youtu.be/pjdT0lU34ps](https://youtu.be/pjdT0lU34ps)
 
 ## Screenshots
 
